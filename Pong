@@ -1,0 +1,82 @@
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const ballRadius = 10;
+let ballX = canvas.width / 2;
+let ballY = canvas.height / 2;
+let ballSpeedX = 5;
+let ballSpeedY = 5;
+const paddleHeight = 75;
+const paddleWidth = 10;
+let leftPaddleY = canvas.height / 2 - paddleHeight / 2;
+let rightPaddleY = canvas.height / 2 - paddleHeight / 2;
+const paddleSpeed = 10;
+let leftPaddleMoveUp = false;
+let leftPaddleMoveDown = false;
+let rightPaddleMoveUp = false;
+let rightPaddleMoveDown = false;
+const playerScore = [0, 0];
+const winningScore = 5;
+
+function draw() {
+  // Draw background
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw ball
+  ctx.fillStyle = 'white';
+  ctx.beginPath();
+  ctx.arc(ballX, ballY, ballRadius, 0, Math.PI*2);
+  ctx.fill();
+  ctx.closePath();
+  
+  // Draw left paddle
+  ctx.fillRect(0, leftPaddleY, paddleWidth, paddleHeight);
+  
+  // Draw right paddle
+  ctx.fillRect(canvas.width - paddleWidth, rightPaddleY, paddleWidth, paddleHeight);
+  
+  // Draw scores
+  ctx.fillStyle = 'white';
+  ctx.font = '24px Arial';
+  ctx.fillText(`Player 1: ${playerScore[0]}`, 10, 30);
+  ctx.fillText(`Player 2: ${playerScore[1]}`, canvas.width - 140, 30);
+  
+  // Update ball position
+  ballX += ballSpeedX;
+  ballY += ballSpeedY;
+  
+  // Check ball collision with top/bottom walls
+  if (ballY - ballRadius < 0 || ballY + ballRadius > canvas.height) {
+    ballSpeedY = -ballSpeedY;
+  }
+  
+  // Check ball collision with left paddle
+  if (ballX - ballRadius < paddleWidth) {
+    if (ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) {
+      ballSpeedX = -ballSpeedX;
+      const deltaY = ballY - (leftPaddleY + paddleHeight / 2);
+      ballSpeedY = deltaY * 0.35;
+    } else {
+      playerScore[1]++;
+      resetBall();
+    }
+  }
+  
+  // Check ball collision with right paddle
+  if (ballX + ballRadius > canvas.width - paddleWidth) {
+    if (ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight) {
+      ballSpeedX = -ballSpeedX;
+      const deltaY = ballY - (rightPaddleY + paddleHeight / 2);
+      ballSpeedY = deltaY * 0.35;
+    } else {
+      playerScore[0]++;
+      resetBall();
+    }
+  }
+  
+  // Update paddle positions
+  if (leftPaddleMoveUp) {
+    leftPaddleY -= paddleSpeed;
+  }
+  if (leftPaddleMoveDown) {
+    leftPaddleY
